@@ -56,43 +56,39 @@ An earlier notebook run reached 86.75% test accuracy. These are separate trainin
 
 [Stage B learning notes (Chinese)](docs/stage_b_notes.md)
 
+## Stage C — Character-Level Bigram Language Model
+
+Built a language model for `"hello world"` using an **8 × 8 trainable lookup table**. Each row represents the current character; its eight logits score the possible next characters. Each SGD step samples two text windows, each containing four next-character targets. Training and final evaluation use the same text so that every prediction can be checked by hand.
+
+| Standalone run | Result |
+|---|---:|
+| Trainable parameters | 64 |
+| SGD steps / learning rate | 1,000 / 0.1 |
+| Full-text cross-entropy, before → after training | **2.0672 → 0.6473** |
+| Correct next-character predictions given the original inputs | 7/10 |
+
+The 7/10 result illustrates the model's context limit. In the training text, `l` has three distinct successors and `o` has two. A bigram model gives the same scores every time it sees the same character, so a fixed `argmax` must miss at least three of the ten targets.
+
+The script also generates text from a single starting character. Each sampled character becomes the next input. One run produced `heldrlo wo wordeweldl`: the initial `h` plus 20 sampled characters.
+
+[Stage C learning notes (Chinese)](docs/stage_c_notes.md)
+
 ## Run the Experiments
 
 From the repository root, with the Python environment activated:
 
-### Stage A
-
 ```bash
+# Stage A: train the XOR model, then plot its decision boundary
 python scripts/stage_a_xor.py
 python scripts/plot_stage_a_xor.py
-```
 
-The training script saves weights to `notebooks/stage_a/checkpoints/stage_a_final.pt`. The plotting script loads those weights and saves the decision-boundary figure without retraining.
-
-### Stage B
-
-```bash
+# Stage B: train, select a checkpoint, and evaluate on the test set
 python scripts/stage_b_fashion_mnist.py
+
+# Stage C: train the bigram model and generate text
+python scripts/stage_c_bigram.py
 ```
 
-The script downloads or reuses Fashion-MNIST in `data/`, trains for five epochs, saves the best validation checkpoint to `checkpoints/stageb_fashion_mnist_best.pt`, and evaluates the restored model on the official test set.
+Stage A saves weights to `notebooks/stage_a/checkpoints/stage_a_final.pt`; the plotting script loads them without retraining. Stage B downloads or reuses Fashion-MNIST in `data/` and writes the selected checkpoint to `checkpoints/stageb_fashion_mnist_best.pt`. Stage C uses an inline training string and requires no dataset download.
 
-Running the script again starts a new training run and may overwrite that checkpoint. Exact metrics can vary across runs.
-
-## Learning Approach
-
-- Implement core model and training logic independently.
-- Use notebooks to inspect tensors, gradients, and intermediate outputs.
-- Consolidate completed workflows into standalone Python scripts.
-- Check tensor shapes, sample counts, metric aggregation, and checkpoint restoration.
-- Prioritize understanding and correctness over benchmark scores.
-
-## Next Direction
-
-Build a small character-level language model to learn text encoding, next-token prediction, and autoregressive generation, then progress toward Stanford CS336 assignments on language modeling and systems.
-
-## Tools
-
-Python · PyTorch · torchvision · Jupyter · NumPy · Matplotlib
-
-[Stanford CS336: Language Modeling from Scratch](https://cs336.stanford.edu/)
+Reported metrics come from individual runs. Initialization, training order, sampled windows, and generated text can vary.
