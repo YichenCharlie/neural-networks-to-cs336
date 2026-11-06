@@ -66,4 +66,4 @@ Stage A saves weights to `notebooks/stage_a/checkpoints/stage_a_final.pt`; the p
 
 ## Continuation
 
-This repository is complete through Stage C. I’m continuing in [CS336 Assignment 1: Basics](https://github.com/YichenCharlie/cs336-assignment1-basics), my separate repository based on Stanford’s official starter code. The first task there is to train a byte-level BPE tokenizer: instead of assigning one ID to each character as in Stage C, the tokenizer learns which adjacent byte sequences to merge.
+This repository is complete through Stage C. I’m continuing in [CS336 Assignment 1: Basics](https://github.com/YichenCharlie/cs336-assignment1-basics), my separate repository based on Stanford’s official starter code.
